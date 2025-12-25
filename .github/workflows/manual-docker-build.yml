@@ -3,19 +3,21 @@ name: Manual Docker Build and Push
 on:
   workflow_dispatch:
     inputs:
+      image:
+        description: "Docker image name (e.g., username/okgo)"
+        required: true
       tag:
         description: "Docker image tag (defaults to latest)"
         required: false
         default: "latest"
-
-env:
-  IMAGE_NAME: "your-dockerhub-username/okgo"
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      IMAGE_NAME: ${{ inputs.image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,6 +37,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ inputs.tag != '' && inputs.tag || 'latest' }}
+          tags: ${{ env.IMAGE_NAME }}:${{ inputs.tag }}
           no-cache: true
           provenance: false
